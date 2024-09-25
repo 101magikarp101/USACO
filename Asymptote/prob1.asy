@@ -1,0 +1,12 @@
+size(2000,1500);
+import fontsize;
+defaultpen(fontsize(90pt));
+pen p = 5+black;
+pen f = grey+opacity(0.4);
+draw((0,0)--(0,2)--(2,0)--(2,2)--cycle,p);
+draw(arc((-1,1),sqrt(2),45,315),p);
+label("$A$",(0,0),SE);
+label("$B$",(0,2),NE);
+label("$C$",(2,2),NE);
+label("$D$",(2,0),SE);
+label("$E$",(1,1),N+(0,0.5));

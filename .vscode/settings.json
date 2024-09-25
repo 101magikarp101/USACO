@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "set": "cpp",
+        "__split_buffer": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "ios": "cpp",
+        "iostream": "cpp",
+        "iomanip": "cpp",
+        "ostream": "cpp",
+        "unordered_map": "cpp"
+    }
+}

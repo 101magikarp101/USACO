@@ -1,0 +1,26 @@
+yoink n
+yoink a
+yoink k
+*slaps -1 on top of k*
+bruh x is lowkey just 0
+vibe check n ratios x
+simp for 9
+simp for 25
+bruh i is lowkey just 1
+vibe check n ratios i
+simp for 14
+*slaps 1 on top of x*
+simp for 6
+bruh j is lowkey just i
+*slaps -1 on top of j*
+vibe check a[i] ratios a[j]
+simp for 20
+*slaps 1 on top of i*
+simp for 10
+bruh temp is lowkey just a[j]
+bruh a[j] is lowkey just a[i]
+bruh a[i] is lowkey just temp
+*slaps 1 on top of i*
+simp for 10
+yeet a[k]
+go touch some grass

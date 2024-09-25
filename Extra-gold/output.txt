@@ -1,0 +1,7 @@
+i: 1 cur: 2 ans: 1
+i: 2 cur: 3 ans: 3
+i: 3 cur: 4 ans: 6
+i: 4 cur: 4 ans: 9
+i: 5 cur: 4 ans: 12
+i: 6 cur: 5 ans: 16
+16

@@ -1,0 +1,15 @@
+c: m
+l: 1 r: 3
+2
+c: r
+l: 2 r: 4 x: 100
+done
+c: m
+l: 1 r: 3
+2
+c: r
+l: 5 r: 5 x: 10
+done
+c: m
+l: 1 r: 5
+1
