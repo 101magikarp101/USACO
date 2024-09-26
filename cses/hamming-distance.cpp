@@ -35,12 +35,26 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
-int T, N;
-int a[200005];
+int N, M;
+bitset<30> a[20005];
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    
+    cin >> N >> M;
+    for (int i = 0; i < N; i++) {
+        string s; cin >> s;
+        for (int j = 0; j < M; j++) {
+            a[i][j] = s[j]-'0';
+        }
+    }
+    int ans = 1000;
+    for (int i = 0; i < N; i++) {
+        for (int j = i+1; j < N; j++) {
+            bitset<30> res = a[i]^a[j];
+            ans = min(ans, __builtin_popcount(res.to_ulong()));
+        }
+    }
+    cout << ans << endl;
     return 0;
 }
