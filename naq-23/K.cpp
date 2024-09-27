@@ -64,31 +64,12 @@ private:
     int len;
 public:
     MinSegTree(int len) : len(len), tree(len * 4, DEFAULT), lz(len * 4, DEFAULT) {}
-    void build() {
-        for (int i = len - 1; i > 0; i--) {
-            tree[i] = std::min(tree[i * 2], tree[i * 2 + 1]);
-        }
-    }
     void push(int node) {
         tree[node * 2] = lz[node];
         tree[node * 2 + 1] = lz[node];
         lz[node * 2] = lz[node];
         lz[node * 2 + 1] = lz[node];
         lz[node] = DEFAULT;
-    }
-    void set(int node, int s, int e, int idx, T val) {
-        if (s == e) {
-            tree[node] = val;
-            return;
-        }
-        if (lz[node] != DEFAULT) push(node);
-        int m = (s + e) / 2;
-        if (idx <= m) {
-            set(node * 2, s, m, idx, val);
-        } else {
-            set(node * 2 + 1, m + 1, e, idx, val);
-        }
-        tree[node] = std::min(tree[node * 2], tree[node * 2 + 1]);
     }
     void update(int node, int s, int e, int l, int r, T val) {
         if (s > r || e < l) return;
@@ -123,50 +104,128 @@ struct edge {
 };
 
 int N, M;
-vt<edge> adj[200005];
-ll par[200005], len[200005];
+vt<edge> adj[100005];
+int up[100005][17];
+int par[100005], siz[100005];
 int dep[100005];
+int hld[100005];
+int tim[100005];
+ll sus[100005];
 edge a[1000005];
 vt<edge> oth;
 ll tot = 0;
+int t = 1;
+MinSegTree<ll> st(100005);
+DSU dsu(100005);
 
-void dfs(int u, int p, int d) {
+
+void removep(int u, int p) {
     par[u] = p;
-    dep[u] = d;
     for (edge e : adj[u]) {
-        if (e.v == p) continue;
-        dfs(e.v, u, d+1);
+        if (e.v==p) continue;
+        removep(e.v,u);
+    }
+    for (int i = 0; i < sz(adj[u]); i++) {
+        if (adj[u][i].v == p) {
+            swap(adj[u][i], adj[u][sz(adj[u])-1]);
+            adj[u].pop_back();
+            break;
+        }
     }
 }
 
-// void run(int u, ll v) {
-//     if (u <= 1) return;
-//     if (len[u] == -1) {
-//         len[u] = v;
-//         run(par[u], v);
-//     }
-// }
-
-ll find(int u, int p) {
-    ll res = 0;
-    for (edge e : adj[u]) {
-        if (e.v == p) continue;
-        res = max(res, find(e.v, u));
-        res = max(res, len[e.v]-e.w);
+void dfs1(int u, int d) {
+    siz[u] = 1;
+    dep[u] = d;
+    up[u][0] = par[u];
+    for (int i = 1; i < 17; i++) {
+        if (up[u][i-1]==0) break;
+        up[u][i] = up[up[u][i-1]][i-1];
     }
-    return res;
+    for (edge e : adj[u]) {
+        dfs1(e.v,d+1);
+        siz[u]+=siz[e.v];
+    }
+}
+
+void dfs2(int u) {
+    tim[u] = t++;
+    for (int i = 0; i < sz(adj[u]); i++) {
+        if (siz[adj[u][i].v] > siz[adj[u][0].v]) {
+            swap(adj[u][i],adj[u][0]);
+        }
+    }
+    for (int i = 0; i < sz(adj[u]); i++) {
+        if (i==0) {
+            hld[adj[u][i].v] = hld[u]+1;
+        } else {
+            hld[adj[u][i].v] = 0;
+        }
+        dfs2(adj[u][i].v);
+    }
+}
+
+int lift(int u, int k) {
+    for (int i = 16; i >= 0; i--) {
+        if (k&(1<<i)) {
+            u = up[u][i];
+        }
+    }
+    return u;
+}
+
+int lca(int u, int v) {
+    if (dep[u] > dep[v]) {
+        u = lift(u, dep[u]-dep[v]);
+    } else if (dep[u] < dep[v]) {
+        v = lift(v, dep[v]-dep[u]);
+    }
+    if (u==v) return v;
+    for (int i = 16; i >= 0; i--) {
+        if (up[u][i] != up[v][i]) {
+            u = up[u][i];
+            v = up[v][i];
+        }
+    }
+    return par[u];
+}
+
+void runup(int u, int d, ll w) {
+    if (d <= 0) return;
+    if (hld[u] == 0) {
+        sus[u] = w;
+        u = par[u];
+        runup(u, d-1, w);
+    } else {
+        int dd = min(d,hld[u]);
+        st.update(1,1,N,tim[u]-dd+1,tim[u],w);
+        u = lift(u,dd);
+        runup(u, d-dd, w);
+    }
+}
+
+void run(int u, int v, ll w) {
+    int l = lca(u,v);
+    runup(u, dep[u]-dep[l], w);
+    runup(v, dep[v]-dep[l], w);
+}
+
+ll find(int u) {
+    ll ans = 0;
+    for (edge e : adj[u]) {
+        ll res = min(sus[e.v], st.query(1,1,N,tim[e.v],tim[e.v]));
+        ans = max(ans, res-e.w);
+        ans = max(ans, find(e.v));
+    }
+    return ans;
 }
 
 int main() {
-    // HLD first
-    // backwards iterate through edges
-    // lazy minsegtree
     ios::sync_with_stdio(0);
     cin.tie(0);
     cin >> N >> M;
-    DSU dsu(N+1);
     for (int i = 1; i <= N; i++) {
-        len[i] = -1;
+        sus[i] = LLONG_MAX;
     }
     for (int i = 0; i < M; i++) {
         int u, v; ll w; cin >> u >> v >> w;
@@ -178,28 +237,19 @@ int main() {
             adj[a[i].u].pb({a[i].u, a[i].v, a[i].w});
             adj[a[i].v].pb({a[i].v, a[i].u, a[i].w});
             tot += a[i].w;
-            // cout << "edge " << a[i].u << " " << a[i].v << " " << a[i].w << endl;
         } else {
             oth.pb(a[i]);
         }
     }
-    // cout << "tot: " << tot << endl;
-    dfs(1, 0, 0);
+    removep(1,0);
+    dfs1(1,0);
+    dfs2(1);
+    reverse(all(oth));
     for (edge e : oth) {
-        int u = e.u, v = e.v;
-        // run(u, e.w);
-        // run(v, e.w);
+        int u = e.u, v = e.v; ll w = e.w;
+        run(u,v,e.w);
     }
-    // cout << "par: ";
-    // for (int i = 1; i <= N; i++) {
-    //     cout << par[i] << " ";
-    // }
-    // cout << endl;
-    // cout << "len: ";
-    // for (int i = 1; i <= N; i++) {
-    //     cout << len[i] << " ";
-    // }
-    // cout << endl;
-    cout << tot+find(1, 0) << endl;
+    ll ans = find(1);
+    cout << tot+ans << endl;
     return 0;
 }
