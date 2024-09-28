@@ -35,23 +35,24 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
+int T, N;
+int a[200005];
+
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<int> dis(1, 1000000);
-    uniform_int_distribution<int> dis2(1, 100000);
-    int N = 100000, Q = 1000000;
-    cout << N << " " << Q << endl;
-    for(long i = 2; i <= N; ++i) cout << (rand() % (i - 1) + 1) << " " << i << " " << 10 << "\n";
-    for (int i = 1; i <= Q; i++) {
-        int x = dis2(rd);
-        int y = x;
-        while (x==y) {
-            y = dis2(rd);
+    cin >> N;
+    for (int i = 0; i < N; i++) {
+        cin >> a[i];
+    }
+    int cur = a[0];
+    for (int i = 1; i < N; i++) {
+        if (cur == -1) {
+            cur = a[i];
+        } else if (a[i]%cur==0) {
+            cout << a[i] << endl;
+            cur = -1;
         }
-        cout << x << " " << y << " " << dis(rd) << endl;
     }
     return 0;
 }

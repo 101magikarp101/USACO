@@ -35,23 +35,57 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
+int N, M;
+vt<int> adj[100005];
+
+ll c3(ll x) {
+    return x*(x-1)*(x-2)/6;
+}
+
 int main() {
+    // auto start = chrono::high_resolution_clock::now();
     ios::sync_with_stdio(0);
     cin.tie(0);
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<int> dis(1, 1000000);
-    uniform_int_distribution<int> dis2(1, 100000);
-    int N = 100000, Q = 1000000;
-    cout << N << " " << Q << endl;
-    for(long i = 2; i <= N; ++i) cout << (rand() % (i - 1) + 1) << " " << i << " " << 10 << "\n";
-    for (int i = 1; i <= Q; i++) {
-        int x = dis2(rd);
-        int y = x;
-        while (x==y) {
-            y = dis2(rd);
-        }
-        cout << x << " " << y << " " << dis(rd) << endl;
+    cin >> N >> M;
+    for (int i = 0; i < M; i++) {
+        int a, b; cin >> a >> b;
+        adj[a].pb(b);
+        adj[b].pb(a);
     }
+    for (int i = 1; i <= N; i++) {
+        sort(all(adj[i]));
+    }
+    ll ans = 0;
+    ll cnt = 0;
+    for (int i = 1; i <= N; i++) {
+        if (sz(adj[i])>=4) {
+            ll k = 0, kk = 0;
+            for (int j : adj[i]) {
+                ll tempk = 0;
+                int l = 0;
+                for (int m = 0; m < sz(adj[j]); m++) {
+                    cnt++;
+                    if (adj[j][m] == i) continue;
+                    while (l < sz(adj[i]) && adj[i][l] < adj[j][m]) {
+                        l++;
+                        if (l == sz(adj[i])) goto jump;
+                    }
+                    if (adj[i][l] == adj[j][m]) {
+                        tempk++;
+                    }
+                }
+                jump:
+                k += tempk;
+                kk += sz(adj[j])-1-tempk;
+            }
+            ans += c3(sz(adj[i])-2)*k;
+            ans += c3(sz(adj[i])-1)*kk;
+        }
+    }
+    // cout <<"cnt: " << cnt << endl;
+    cout << ans << endl;
+    // auto stop = chrono::high_resolution_clock::now();
+    // auto duration = chrono::duration_cast<chrono::milliseconds>(stop-start);
+    // cerr << "Time: " << duration.count() << "ms" << endl;
     return 0;
 }

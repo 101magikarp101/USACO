@@ -35,23 +35,49 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
+int T, N;
+int a[1005];
+string ans[1005];
+
+pair<string,int> solve(int x) {
+    vt<string> res;
+    int tot = 0;
+    while (x) {
+        if (x == 1) {
+            res.pb("1");
+            break;
+        }
+        if (x&1) {
+            res.pb("1+");
+            x--;
+        } else {
+            res.pb("d+");
+            x /= 2;
+        }
+        tot++;
+    }
+    string s = "";
+    for (int i = sz(res)-1; i >= 0; i--) {
+        s += res[i];
+    }
+    return {s,tot};
+}
+
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<int> dis(1, 1000000);
-    uniform_int_distribution<int> dis2(1, 100000);
-    int N = 100000, Q = 1000000;
-    cout << N << " " << Q << endl;
-    for(long i = 2; i <= N; ++i) cout << (rand() % (i - 1) + 1) << " " << i << " " << 10 << "\n";
-    for (int i = 1; i <= Q; i++) {
-        int x = dis2(rd);
-        int y = x;
-        while (x==y) {
-            y = dis2(rd);
-        }
-        cout << x << " " << y << " " << dis(rd) << endl;
+    cin >> N;
+    for (int i = 0; i < N; i++) {
+        cin >> a[i];
+    }
+    int tot = 0;
+    for (int i = N-1; i >= 0; i--) {
+        auto res = solve(a[i]+tot);
+        ans[i] = res.first;
+        tot += res.second;
+    }
+    for (int i = 0; i < N; i++) {
+        cout << ans[i];
     }
     return 0;
 }

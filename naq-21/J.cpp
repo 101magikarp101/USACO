@@ -35,23 +35,43 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
+int N, Q;
+int a[1000005];
+
+bool solve(int x) {
+    if (x == 0) return 1;
+    int tot = a[0];
+    int r = 0;
+    while (r < N && tot < x) {
+        r++;
+        if (r==N) return 0;
+        tot += a[r];
+    }
+    if (tot == x) return 1;
+    for (int i = 1; i < N; i++) {
+        tot -= a[i-1];
+        while (tot < x) {
+            r = (r+1)%N;
+            tot += a[r];
+        }
+        if (tot == x) {
+            if (r == N-1) return 1;
+            if (i>r) return 1;
+        }
+    }
+    return 0;
+}
+
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<int> dis(1, 1000000);
-    uniform_int_distribution<int> dis2(1, 100000);
-    int N = 100000, Q = 1000000;
-    cout << N << " " << Q << endl;
-    for(long i = 2; i <= N; ++i) cout << (rand() % (i - 1) + 1) << " " << i << " " << 10 << "\n";
-    for (int i = 1; i <= Q; i++) {
-        int x = dis2(rd);
-        int y = x;
-        while (x==y) {
-            y = dis2(rd);
-        }
-        cout << x << " " << y << " " << dis(rd) << endl;
+    cin >> N >> Q;
+    for (int i = 0; i < N; i++) {
+        cin >> a[i];
+    }
+    while (Q--) {
+        int x; cin >> x;
+        cout << (solve(x)?"Yes":"No") << endl;
     }
     return 0;
 }
