@@ -36,76 +36,90 @@ struct pll {
 };
 
 template <class T> class SumSegTree {
-    //MUST BE 0-INDEXED
   private:
     const T DEFAULT = 0;
-    vector<T> tr;
-    vector<T> lz;
+    vector<T> tr, lza, lzs;
     int len;
   public:
-    SumSegTree(int l) : len(l), tr(l*4, DEFAULT), tr(l*4, DEFAULT) {}
-    void build() {
-        for (int i = len - 1; i > 0; i--) {
-            tr[i] = tr[i*2] + tr[i*2+1];
-        }
+    SumSegTree(int l) : len(l), tr(l*4, DEFAULT), lza(l*4, DEFAULT), lzs(l*4, DEFAULT) {}
+    void pusha(int n, int s, int m, int e) {
+        lzs[2*n] = 0, lzs[2*n+1] = 0;
+        lza[2*n] += lza[n], lza[2*n+1] += lza[n];
+        tr[2*n] += (ll)(m-s+1)*lza[n], tr[2*n+1] += (ll)(e-m)*lza[n];
+        lza[n] = 0;
     }
-    void set(int ind, T val) {
-        ind += len;
-        tr[ind] = val;
-        for (; ind > 1; ind /= 2) {
-            tr[ind / 2] = tr[ind] + tr[ind ^ 1];
-        }
+    void pushs(int n, int s, int m, int e) {
+        lza[2*n] = 0, lza[2*n+1] = 0;
+        lzs[2*n] = lzs[n], lzs[2*n+1] = lzs[n];
+        tr[2*n] = (ll)(m-s+1)*lzs[n], tr[2*n+1] = (ll)(e-m)*lzs[n];
+        lzs[n] = 0;
     }
-    void add(int ind, T val) {
-        ind += len;
-        tr[ind] += val;
-        for (; ind > 1; ind /= 2) {
-            tr[ind / 2] = tr[ind] + tr[ind ^ 1];
+    void range_add(int n, int s, int e, int l, int r, T val) {
+        if (s>r || e<l) return;
+        if (l<=s && e<=r) {
+            tr[n] += (ll)(e-s+1)*val;
+            lza[n] += val;
+            lzs[n] = 0;
+            return;
         }
+        int m = (s+e) / 2;
+        if (lza[n] != DEFAULT) pusha(n,s,m,e);
+        if (lzs[n] != DEFAULT) pushs(n,s,m,e);
+        range_add(n*2, s, m, l, r, val);
+        range_add(n*2+1, m+1, e, l, r, val);
+        tr[n] = tr[n*2]+tr[n*2+1];
     }
-    void update(int v, int tl, int tr, int l, int r, T add) {
-        if (l > r) return;
-        if (l == tl && tr == r) {
-            tr[v] += add;
-        } else {
-            int tm = (tl + tr) / 2;
-            update(v * 2, tl, tm, l, min(r, tm), add);
-            update(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r, add);
+    void range_set(int n, int s, int e, int l, int r, T val) {
+        if (s>r || e<l) return;
+        if (l<=s && e<=r) {
+            tr[n] = (ll)(e-s+1)*val;
+            lzs[n] = val;
+            lza[n] = 0;
+            return;
         }
+        int m = (s+e) / 2;
+        if (lza[n] != DEFAULT) pusha(n,s,m,e);
+        if (lzs[n] != DEFAULT) pushs(n,s,m,e);
+        range_set(n*2, s, m, l, r, val);
+        range_set(n*2+1, m+1, e, l, r, val);
+        tr[n] = tr[n*2]+tr[n*2+1];
     }
-    //get the value at index pos 
-    //v: index of current node
-    //tl: left bound of current node
-    //tr: right bound of current node
-    //pos: index of element to get
-    T get(int v, int tl, int tr, int pos) {
-        if (tl == tr) {
-            return tr[v];
-        }
-        int tm = (tl + tr) / 2;
-        if (pos <= tm) {
-            return tr[v] + get(v * 2, tl, tm, pos);
-        } else {
-            return tr[v] + get(v * 2 + 1, tm + 1, tr, pos);
-        }
-    }
-    /** @return the sum of the elements in the range [start, end) */
-    T range_sum(int start, int end) {
-        T sum = DEFAULT;
-        for (start += len, end += len; start < end; start /= 2, end /= 2) {
-            if (start % 2 == 1) { sum += tr[start++]; }
-            if (end % 2 == 1) { sum += tr[--end]; }
-        }
-        return sum;
+    T query(int n, int s, int e, int l, int r) {
+        if (s>r || e<l) return DEFAULT;
+        if (l<=s && e<=r) return tr[n];
+        int m = (s+e) / 2;
+        if (lza[n] != DEFAULT) pusha(n,s,m,e);
+        if (lzs[n] != DEFAULT) pushs(n,s,m,e);
+        ll left = query(n*2, s, m, l, r);
+        ll right = query(n*2+1, m+1, e, l, r);
+        // cout << n << " " << s << " " << e << " " << l << " " << r << " " << left << " " << right << endl;
+        return left+right;
     }
 };
 
-int T, N;
-int a[200005];
+int N, Q;
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    
+    cin >> N >> Q;
+    SumSegTree<ll> st(N);
+    for (int i = 1; i <= N; i++) {
+        ll x; cin >> x;
+        st.range_add(1,1,N,i,i,x);
+    }
+    while (Q--) {
+        int x; cin >> x;
+        if (x==1) {
+            int l, r; ll v; cin >> l >> r >> v;
+            st.range_add(1,1,N,l,r,v);
+        } else if (x==2) {
+            int l, r; ll v; cin >> l >> r >> v;
+            st.range_set(1,1,N,l,r,v);
+        } else {
+            int l, r; cin >> l >> r;
+            cout << st.query(1,1,N,l,r) << endl;
+        }
+    }
     return 0;
 }
