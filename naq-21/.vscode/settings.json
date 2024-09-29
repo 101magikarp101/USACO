@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "__tree": "cpp",
+        "regex": "cpp",
+        "tuple": "cpp",
+        "variant": "cpp",
+        "vector": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}
