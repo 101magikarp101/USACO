@@ -35,47 +35,71 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
-int N, M;
-vt<int> adj[100005];
-int d[100005], up[100005];
-ll ans = 0;
+int N;
+char a[32][32];
+bool lit[32][32];
 
-void dfs(int u, int p, int dis) {
-    d[u] = dis;
-    up[u] = p;
-    for (int v : adj[u]) {
-        if (v == p) continue;
-        if (d[v] == -1) {
-            dfs(v, u, dis+1);
+int dx[] = {0,0,1,-1};
+int dy[] = {1,-1,0,0};
+
+bool in(int x, int y) {
+    return x >= 0 && x < N && y >= 0 && y < N;
+}
+
+bool isblock(char c) {
+    return c=='X'||(c>='0'&&c<='4');
+}
+
+bool light(int x, int y) {
+    lit[x][y] = 1;
+    for (int i = 0; i < 4; i++) {
+        int nx = x, ny = y;
+        while (true) {
+            nx += dx[i];
+            ny += dy[i];
+            if (!in(nx,ny)) break;
+            if (a[nx][ny] == '?') return 0;
+            if (isblock(a[nx][ny])) break;
+            lit[nx][ny] = 1;
         }
     }
-}
-
-void solve(int u, int p) {
-    ll cnt = 0;
-    if (sz(adj[u]) >= 4) {
-        
-    }
-}
-
-ll c3(ll x) {
-    return x*(x-1)*(x-2)/6;
+    return 1;
 }
 
 int main() {
-    // auto start = chrono::high_resolution_clock::now();
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> N >> M;
-    for (int i = 0; i < M; i++) {
-        int a, b; cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
+    cin >> N;
+    for (int i = 0; i < N; i++) {
+        string s; cin >> s;
+        for (int j = 0; j < N; j++) {
+            a[i][j] = s[j];
+            lit[i][j] = 0;
+        }
     }
-    for (int i = 1; i <= N; i++) {
-        d[i] = -1;
+    bool good = 1;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (a[i][j] == '?') {
+                good &= light(i,j);
+            } else if (a[i][j] >= '0' && a[i][j] <= '4') {
+                int tar = a[i][j]-'0';
+                for (int k = 0; k < 4; k++) {
+                    int nx = i+dx[k], ny = j+dy[k];
+                    if (!in(nx,ny)) continue;
+                    if (a[nx][ny] == '?') tar--;
+                }
+                good &= (tar==0);
+            }
+            if (!good) break;
+        }
+        if (!good) break;
     }
-    dfs(1,0,0);
-    solve(1,0);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            good &= (lit[i][j] || isblock(a[i][j]));
+        }
+    }
+    cout << good << endl;
     return 0;
 }

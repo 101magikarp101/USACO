@@ -36,46 +36,40 @@ struct pll {
 };
 
 int N, M;
-vt<int> adj[100005];
-int d[100005], up[100005];
-ll ans = 0;
+int dp[2005][2005];
+int a[2005], b[2005];
 
-void dfs(int u, int p, int dis) {
-    d[u] = dis;
-    up[u] = p;
-    for (int v : adj[u]) {
-        if (v == p) continue;
-        if (d[v] == -1) {
-            dfs(v, u, dis+1);
-        }
-    }
-}
-
-void solve(int u, int p) {
-    ll cnt = 0;
-    if (sz(adj[u]) >= 4) {
-        
-    }
-}
-
-ll c3(ll x) {
-    return x*(x-1)*(x-2)/6;
+int calc(int x) {
+    x = abs(x);
+    if (x <= 15) return 7;
+    if (x <= 23) return 6;
+    if (x <= 43) return 4;
+    if (x <= 102) return 2;
+    return 0;
 }
 
 int main() {
-    // auto start = chrono::high_resolution_clock::now();
     ios::sync_with_stdio(0);
     cin.tie(0);
     cin >> N >> M;
-    for (int i = 0; i < M; i++) {
-        int a, b; cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
-    }
     for (int i = 1; i <= N; i++) {
-        d[i] = -1;
+        cin >> a[i];
     }
-    dfs(1,0,0);
-    solve(1,0);
+    for (int i = 1; i <= M; i++) {
+        cin >> b[i];
+    }
+    for (int i = 0; i <= N; i++) {
+        for (int j = 0; j <= M; j++) {
+            dp[i][j] = 0;
+        }
+    }
+    dp[0][0] = 0;
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= M; j++) {
+            dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+            dp[i][j] = max(dp[i][j], dp[i-1][j-1] + calc(b[j]-a[i]));
+        }
+    }
+    cout << dp[N][M] << endl;
     return 0;
 }

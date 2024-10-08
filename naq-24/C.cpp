@@ -35,47 +35,18 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
-int N, M;
-vt<int> adj[100005];
-int d[100005], up[100005];
-ll ans = 0;
-
-void dfs(int u, int p, int dis) {
-    d[u] = dis;
-    up[u] = p;
-    for (int v : adj[u]) {
-        if (v == p) continue;
-        if (d[v] == -1) {
-            dfs(v, u, dis+1);
-        }
-    }
-}
-
-void solve(int u, int p) {
-    ll cnt = 0;
-    if (sz(adj[u]) >= 4) {
-        
-    }
-}
-
-ll c3(ll x) {
-    return x*(x-1)*(x-2)/6;
-}
+int T, N;
+int a[200005];
 
 int main() {
-    // auto start = chrono::high_resolution_clock::now();
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> N >> M;
-    for (int i = 0; i < M; i++) {
-        int a, b; cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
+    cin >> T;
+    int ans = 0;
+    while (T--) {
+        int n; cin >> n;
+        if (n%2==1) ans++;
     }
-    for (int i = 1; i <= N; i++) {
-        d[i] = -1;
-    }
-    dfs(1,0,0);
-    solve(1,0);
+    cout << ans << endl;
     return 0;
 }
