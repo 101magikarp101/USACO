@@ -1,0 +1,8 @@
+5 5 1
+AAAAA
+A
+AA
+AAA
+AAAA
+AAAAA
+1 5
