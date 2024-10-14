@@ -1,0 +1,175 @@
+cols 51 29
+resv -1 -1
+resw -1 -1
+solve1 3 0 1 2 78
+cols 51 29
+resv -1 0
+resw -1 -1
+solve1 10 0 1 2 78
+solve1 6 0 1 2 78
+solve1 7 0 1 2 82
+cols 51 29
+resv -1 -1
+resw -1 -1
+solve1 11 0 1 2 78
+solve1 8 0 1 2 75
+cols 51 29
+resv -1 -1
+resw -1 -1
+solve1 13 0 1 2 78
+solve1 5 0 1 2 71
+solve1 4 0 1 2 71
+cols 51 29
+resv -1 -1
+resw -1 0
+solve1 9 0 1 2 78
+cols 51 29
+resv -1 -1
+resw -1 -1
+solve1 12 0 1 2 78
+solve1 2 0 1 2 64
+solve1 1 0 1 2 51
+cols 29 51
+resv -1 -1
+resw -1 -1
+solve1 3 0 2 1 78
+cols 29 51
+resv -1 -1
+resw -1 0
+solve1 10 0 2 1 78
+solve1 6 0 2 1 78
+solve1 7 0 2 1 82
+cols 29 51
+resv -1 -1
+resw -1 -1
+solve1 11 0 2 1 78
+solve1 8 0 2 1 75
+cols 29 51
+resv -1 -1
+resw -1 -1
+solve1 13 0 2 1 78
+solve1 5 0 2 1 71
+solve1 4 0 2 1 71
+cols 29 51
+resv -1 0
+resw -1 -1
+solve1 9 0 2 1 78
+cols 29 51
+resv -1 -1
+resw -1 -1
+solve1 12 0 2 1 78
+solve1 2 0 2 1 64
+solve1 1 0 2 1 51
+cols 20 29
+resv -1 0
+resw -1 -1
+solve1 3 1 0 2 47
+cols 20 29
+resv -1 0
+resw -1 -1
+solve1 10 1 0 2 47
+solve1 6 1 0 2 47
+solve1 7 1 0 2 48
+solve1 11 1 0 2 48
+solve1 8 1 0 2 48
+cols 20 29
+resv -1 -1
+resw -1 -1
+solve1 13 1 0 2 47
+cols 20 29
+resv -3 -1
+resw -2 -1
+solve1 5 1 0 2 44
+solve1 4 1 0 2 44
+solve1 9 1 0 2 49
+cols 20 29
+resv -1 0
+resw -1 -1
+solve1 12 1 0 2 47
+solve1 2 1 0 2 44
+solve1 1 1 0 2 44
+cols 29 20
+resv -1 -1
+resw -1 0
+solve1 3 1 2 0 47
+cols 29 20
+resv -1 -1
+resw -1 0
+solve1 10 1 2 0 47
+solve1 6 1 2 0 47
+solve1 7 1 2 0 48
+solve1 11 1 2 0 48
+solve1 8 1 2 0 48
+cols 29 20
+resv -1 -1
+resw -1 -1
+solve1 13 1 2 0 47
+cols 29 20
+resv -2 -1
+resw -3 -1
+solve1 5 1 2 0 44
+solve1 4 1 2 0 44
+solve1 9 1 2 0 49
+cols 29 20
+resv -1 -1
+resw -1 0
+solve1 12 1 2 0 47
+solve1 2 1 2 0 44
+solve1 1 1 2 0 44
+cols 20 51
+resv -1 0
+resw -1 -1
+solve1 3 2 0 1 69
+cols 20 51
+resv -1 0
+resw -1 0
+solve1 10 2 0 1 69
+solve1 6 2 0 1 69
+solve1 7 2 0 1 70
+solve1 11 2 0 1 70
+solve1 8 2 0 1 70
+cols 20 51
+resv -1 -1
+resw -1 -1
+solve1 13 2 0 1 69
+cols 20 51
+resv -2 -1
+resw -2 -1
+solve1 5 2 0 1 67
+solve1 4 2 0 1 67
+solve1 9 2 0 1 70
+cols 20 51
+resv -1 0
+resw -1 -1
+solve1 12 2 0 1 69
+solve1 2 2 0 1 62
+solve1 1 2 0 1 52
+cols 51 20
+resv -1 -1
+resw -1 0
+solve1 3 2 1 0 69
+cols 51 20
+resv -1 0
+resw -1 0
+solve1 10 2 1 0 69
+solve1 6 2 1 0 69
+solve1 7 2 1 0 70
+solve1 11 2 1 0 70
+solve1 8 2 1 0 70
+cols 51 20
+resv -1 -1
+resw -1 -1
+solve1 13 2 1 0 69
+cols 51 20
+resv -2 -1
+resw -2 -1
+solve1 5 2 1 0 67
+solve1 4 2 1 0 67
+solve1 9 2 1 0 70
+cols 51 20
+resv -1 -1
+resw -1 0
+solve1 12 2 1 0 69
+solve1 2 2 1 0 62
+solve1 1 2 1 0 52
+44
