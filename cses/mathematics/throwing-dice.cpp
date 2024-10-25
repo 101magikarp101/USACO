@@ -105,7 +105,8 @@ mat binpow(mat a, ll b) {
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    int s = 6;
+    auto start = chrono::high_resolution_clock::now();
+    int s = 200;
     mat a(s,s);
     for (int i = 0; i < s; i++) {
         for (int j = 0; j < s; j++) {
@@ -125,5 +126,8 @@ int main() {
     mat res = binpow(b, K-1);
     a = a*res;
     cout << a.a[s-1][0] << endl;
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed = end-start;
+    cerr << "Time: " << elapsed.count() << endl;
     return 0;
 }
