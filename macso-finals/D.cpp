@@ -35,17 +35,34 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
-int N, Q;
-int a[200005];
+int N;
+vt<int> adj[200005];
+bool a[200005];
+int ans = 0;
+
+void dfs(int u, int p, bool b) {
+    b |= a[u];
+    if (adj[u].empty() && !b) ans++;
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dfs(v, u, b);
+    }
+}
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    N = 8000000;
-    cout << N << endl;
-    for (int i = 0; i < N; i++) {
-        cout << rand()%1000000000 << " ";
+    cin >> N;
+    for (int i = 0; i < N-1; i++) {
+        int u, v; cin >> u >> v;
+        adj[u].pb(v);
     }
-    cout << endl;
+    int Q; cin >> Q;
+    while (Q--) {
+        int t; cin >> t;
+        a[t] = 1;
+    }
+    dfs(1, 0, 0);
+    cout << ans << endl;
     return 0;
 }
