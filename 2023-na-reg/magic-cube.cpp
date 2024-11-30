@@ -44,42 +44,56 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-int N, K;
-vt<int> a[25];
+struct op {
+    char c; int th, k;
+};
+
+int N, M;
+vt<op> v;
+
+int query(int x, int y, int z) {
+    for (int i = sz(v)-1; i >= 0; i--) {
+        if (v[i].c == 'x') {
+            if (x >= v[i].k) {
+                for (int j = 0; j < v[i].th; j+=90) {
+                    int ny = N-z+1, nz = y;
+                    y = ny, z = nz;
+                }
+            }
+        } else if (v[i].c == 'y') {
+            if (y >= v[i].k) {
+                for (int j = 0; j < v[i].th; j+=90) {
+                    int nx = z, nz = N-x+1;
+                    x = nx, z = nz;
+                }
+            }
+        } else {
+            if (z >= v[i].k) {
+                for (int j = 0; j < v[i].th; j+=90) {
+                    int nx = N-y+1, ny = x;
+                    x = nx, y = ny;
+                }
+            }
+        }
+        // cout << "x: " << x << " y: " << y << " z: " << z << endl;
+    }
+    return x+(y-1)*N+(z-1)*N*N;
+}
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> N >> K;
-    map<string,int> mp;
-    rep(i,0,N) {
-        int n; cin >> n;
-        rep(j,0,n) {
-            string s; cin >> s;
-            if (mp.find(s) == mp.end()) {
-                mp[s] = sz(mp);
-            }
-            a[i].pb(mp[s]);
+    cin >> N >> M;
+    while (M--) {
+        char c; cin >> c;
+        if (c != 'q') {
+            int th, k; cin >> th >> k;
+            k++;
+            v.pb({c, th, k});
+        } else {
+            int x, y, z; cin >> x >> y >> z;
+            cout << query(x, y, z) << endl;
         }
     }
-    int ans = 0;
-    rep(m,0,1<<N) {
-        if (__builtin_popcount(m) != K) continue;
-        map<int,int> mp;
-        rep(i,0,N) {
-            if (m&(1<<i)) {
-                each(s,a[i]) mp[s]++;
-            }
-        }
-        bool g = 1;
-        each(p,mp) {
-            if (p.se > K/2) {
-                g = 0;
-                break;
-            }
-        }
-        ans += g;
-    }
-    cout << ans << endl;
     return 0;
 }

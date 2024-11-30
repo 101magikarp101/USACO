@@ -44,42 +44,12 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-int N, K;
-vt<int> a[25];
+int T, N;
+int a[200005];
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> N >> K;
-    map<string,int> mp;
-    rep(i,0,N) {
-        int n; cin >> n;
-        rep(j,0,n) {
-            string s; cin >> s;
-            if (mp.find(s) == mp.end()) {
-                mp[s] = sz(mp);
-            }
-            a[i].pb(mp[s]);
-        }
-    }
-    int ans = 0;
-    rep(m,0,1<<N) {
-        if (__builtin_popcount(m) != K) continue;
-        map<int,int> mp;
-        rep(i,0,N) {
-            if (m&(1<<i)) {
-                each(s,a[i]) mp[s]++;
-            }
-        }
-        bool g = 1;
-        each(p,mp) {
-            if (p.se > K/2) {
-                g = 0;
-                break;
-            }
-        }
-        ans += g;
-    }
-    cout << ans << endl;
+    
     return 0;
 }

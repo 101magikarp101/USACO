@@ -44,42 +44,59 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-int N, K;
-vt<int> a[25];
+int a[100005];
+
+void tell(int x) {
+    cout << x << endl;
+    cout.flush();
+}
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> N >> K;
-    map<string,int> mp;
-    rep(i,0,N) {
-        int n; cin >> n;
-        rep(j,0,n) {
-            string s; cin >> s;
-            if (mp.find(s) == mp.end()) {
-                mp[s] = sz(mp);
+    int K = 66668;
+    tell(K);
+    a[0] = 1;
+    a[100000] = 1;
+    for (int i = 3; i <= 99999; i+=3) {
+        a[i] = 1;
+    }
+    while (true) {
+        int x; cin >> x;
+        if (x == -1) break;
+        if (a[x] == -1) tell(-1);
+        else if (a[x] == 1) {
+            if (x==0) {
+                tell(1);
+            } else if (x%3==1) {
+                tell(x/3*2+2);
+            } else if (x%3==2) {
+                tell(x/3*2+2+(a[x-1]==1));
+            } else {
+                tell(x/3*2+1);
             }
-            a[i].pb(mp[s]);
+        } else {
+            tell(-1);
+            int sec = (x+2)/3;
+            a[sec*3-2] = 1;
+            a[sec*3-1] = 1;
+            a[sec*3] = 1;
+            a[x-1] = 1;
+            a[x] = -1;
+            a[x+1] = 1;
         }
     }
-    int ans = 0;
-    rep(m,0,1<<N) {
-        if (__builtin_popcount(m) != K) continue;
-        map<int,int> mp;
-        rep(i,0,N) {
-            if (m&(1<<i)) {
-                each(s,a[i]) mp[s]++;
-            }
+    rep(i,1,100000) {
+        if (a[i] == 0) {
+            int sec = (i+2)/3;
+            a[sec*3-2] = 1;
+            a[sec*3-1] = 1;
+            a[sec*3] = 1;
+            a[i] = -1;
         }
-        bool g = 1;
-        each(p,mp) {
-            if (p.se > K/2) {
-                g = 0;
-                break;
-            }
-        }
-        ans += g;
     }
-    cout << ans << endl;
+    rep(i,0,100001) {
+        if (a[i] == 1) tell(i);
+    }
     return 0;
 }
