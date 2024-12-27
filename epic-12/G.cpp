@@ -19,8 +19,8 @@ void dfs1(int x, int y, ll v) {
         s[x].push_back(v);
         return;
     }
-    dfs1(x+1,y,v|((ll)1<<a[x][y]));
-    dfs1(x,y+1,v|((ll)1<<b[x][y]));
+    dfs1(x+1,y,v|(1LL<<a[x][y]));
+    dfs1(x,y+1,v|(1LL<<b[x][y]));
     dfs1(x+1,y,v);
     dfs1(x,y+1,v);
 }
@@ -28,7 +28,7 @@ void dfs1(int x, int y, ll v) {
 void dfs2(int x, int y, ll v) {
     if (x+y==stop) {
         for (; ans < 2*N-2; ans++) {
-            ll z = (((ll)2<<ans)-1)&(~v);
+            ll z = ((2LL<<ans)-1)&(~v);
             if (!binary_search(s[x].begin(),s[x].end(),z)) {
                 break;
             }
@@ -36,10 +36,10 @@ void dfs2(int x, int y, ll v) {
         return;
     }
     if (x>0) {
-        dfs2(x-1,y,v|((ll)1<<a[x-1][y]));
+        dfs2(x-1,y,v|(1LL<<a[x-1][y]));
     }
     if (y>0) {
-        dfs2(x,y-1,v|((ll)1<<b[x][y-1]));
+        dfs2(x,y-1,v|(1LL<<b[x][y-1]));
     }
 }
 
