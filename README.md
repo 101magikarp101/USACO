@@ -7,7 +7,3 @@ In general, the names of the folders describe what competition or what type of p
 
 "882-2" means a the Codeforces #882 Div. 2 round  
 "cc-140" means the CodeChef #140 round
-
-### Some Interesting Things
-
-Looking through this repo chronologically, you can really see how my coding style has changed. from the first USACO competitions I did to the DP problems I do now.
