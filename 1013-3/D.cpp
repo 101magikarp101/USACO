@@ -47,46 +47,15 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-int ad(int a, int b) {
-    a+=b;
-    if (a>=MOD2) a-=MOD2;
-    return a;
+int T, N;
+int a[200005];
+
+bool check(ll mid, ll m, ll res) {
+    ll groups = m/(mid+1);
+    ll hm = m-groups*(mid+1);
+    groups = groups*mid+hm;
+    return groups >= res;
 }
-
-int sub(int a, int b) {
-    a-=b;
-    if (a<0) a+=MOD2;
-    return a;
-}
-
-int mul(int a, int b) {
-    return (int)((a*1LL*b)%MOD2);
-}
-
-int binpow(int a, int b) {
-    int res = 1;
-    while (b) {
-        if (b&1) res = mul(res, a);
-        a = mul(a, a);
-        b >>= 1;
-    }
-    return res;
-}
-
-int inv(int a) {
-    return binpow(a, MOD2-2);
-}
-
-int di(int a, int b) {
-    return mul(a, inv(b));
-}
-
-int N, M, K;
-const int MAXN = 205;
-vt<int> adj[MAXN];
-int invi[MAXN];
-
-// O(N^2 * K)
 
 int main() {
     ios::sync_with_stdio(0);
@@ -95,32 +64,22 @@ int main() {
     auto start_time = chrono::high_resolution_clock::now();
     #endif
 
-    rep(i,0,MAXN) invi[i] = inv(i);
-
-    cin >> N >> M >> K;
-    rep(i,0,M) {
-        int u, v;
-        cin >> u >> v;
-        adj[u].pb(v);
-        adj[v].pb(u);
-    }
-    vt<vt<int>> dp(N+1, vt<int>(2, 0));
-    dp[1][0] = 1;
-    int ans = 0;
-    rep(t,0,K) {
-        rep(i,0,N) {
-            each(j,adj[i]) {
-                dp[j][1] = ad(dp[j][1], mul(dp[i][0], invi[sz(adj[i])]));
+    cin >> T;
+    while (T--) {
+        ll n, m, k; cin >> n >> m >> k;
+        ll res = (k+n-1)/n;
+        ll l = 1, r = m;
+        // cout << "res: " << res << endl;
+        while (l < r) {
+            ll mid = (l+r)/2;
+            if (check(mid, m, res)) {
+                r = mid;
+            } else {
+                l = mid+1;
             }
         }
-        ans = ad(ans, dp[N][1]);
-        dp[N][1] = 0;
-        rep(i,0,N) {
-            dp[i][0] = dp[i][1];
-            dp[i][1] = 0;
-        }
+        cout << l << endl;
     }
-    cout << ans << endl;
 
     #ifdef MAGIKARP
     auto duration = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start_time).count();

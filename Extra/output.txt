@@ -1,1 +1,10 @@
-266012571
+YES
+abacaba
+YES
+abacaba
+YES
+abazabacaba
+YES
+abacabazaba
+NO
+NO

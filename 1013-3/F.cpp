@@ -49,18 +49,18 @@ template<class T> bool ckmax(T& a, const T& b) {
 
 int ad(int a, int b) {
     a+=b;
-    if (a>=MOD2) a-=MOD2;
+    if (a>=MOD) a-=MOD;
     return a;
 }
 
 int sub(int a, int b) {
     a-=b;
-    if (a<0) a+=MOD2;
+    if (a<0) a+=MOD;
     return a;
 }
 
 int mul(int a, int b) {
-    return (int)((a*1LL*b)%MOD2);
+    return (int)((a*1LL*b)%MOD);
 }
 
 int binpow(int a, int b) {
@@ -74,19 +74,22 @@ int binpow(int a, int b) {
 }
 
 int inv(int a) {
-    return binpow(a, MOD2-2);
+    return binpow(a, MOD-2);
 }
 
 int di(int a, int b) {
     return mul(a, inv(b));
 }
 
-int N, M, K;
-const int MAXN = 205;
-vt<int> adj[MAXN];
-int invi[MAXN];
+int T, N, M, D;
+char a[2005][2005];
+int dp[2005][2005][2], pre[2005][2005];
+int dist[2005];
 
-// O(N^2 * K)
+int get(int i, int j, int d) {
+    int l = max(0, j-d), r = min(M-1, j+d);
+    return sub(pre[i][r], (l ? pre[i][l-1] : 0));
+}
 
 int main() {
     ios::sync_with_stdio(0);
@@ -95,32 +98,39 @@ int main() {
     auto start_time = chrono::high_resolution_clock::now();
     #endif
 
-    rep(i,0,MAXN) invi[i] = inv(i);
-
-    cin >> N >> M >> K;
-    rep(i,0,M) {
-        int u, v;
-        cin >> u >> v;
-        adj[u].pb(v);
-        adj[v].pb(u);
-    }
-    vt<vt<int>> dp(N+1, vt<int>(2, 0));
-    dp[1][0] = 1;
-    int ans = 0;
-    rep(t,0,K) {
+    cin >> T;
+    while (T--) {
+        cin >> N >> M >> D;
+        dist[0] = D;
+        dist[1] = sqrtl(D*D-1);
         rep(i,0,N) {
-            each(j,adj[i]) {
-                dp[j][1] = ad(dp[j][1], mul(dp[i][0], invi[sz(adj[i])]));
+            rep(j,0,M) {
+                cin >> a[i][j];
             }
         }
-        ans = ad(ans, dp[N][1]);
-        dp[N][1] = 0;
-        rep(i,0,N) {
-            dp[i][0] = dp[i][1];
-            dp[i][1] = 0;
+        rep(i,0,N) rep(j,0,M) dp[i][j][0] = dp[i][j][1] = 0;
+        rrep(i,N-1,0) {
+            rep(j,0,M) {
+                if (i == N-1) {
+                    dp[i][j][0] = a[i][j] == 'X';
+                } else {
+                    dp[i][j][0] = a[i][j] == 'X' ? get(i+1,j,dist[1]) : 0;
+                }
+                pre[i][j] = dp[i][j][0];
+                if (j) pre[i][j] = ad(pre[i][j], pre[i][j-1]);
+            }
+            rep(j,0,M) {
+                dp[i][j][1] = a[i][j] == 'X' ? sub(get(i,j,dist[0]), dp[i][j][0]) : 0;
+                dp[i][j][0] = ad(dp[i][j][0], dp[i][j][1]);
+            }
+            rep(j,0,M) {
+                pre[i][j] = dp[i][j][0];
+                if (j) pre[i][j] = ad(pre[i][j], pre[i][j-1]);
+            }
         }
+        int ans = pre[0][M-1];
+        cout << ans << endl;
     }
-    cout << ans << endl;
 
     #ifdef MAGIKARP
     auto duration = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start_time).count();

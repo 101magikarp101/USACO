@@ -1,0 +1,5 @@
+a: 4 b: 160 rot: 0 flip: 0
+a: 3 b: 32 rot: 0 flip: 0
+a: 2 b: 0 rot: 0 flip: 0
+a: 1 b: 0 rot: 3 flip: 1
+12 12

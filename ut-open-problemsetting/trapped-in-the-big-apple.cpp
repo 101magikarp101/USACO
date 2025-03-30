@@ -81,12 +81,7 @@ int di(int a, int b) {
     return mul(a, inv(b));
 }
 
-int N, M, K;
-const int MAXN = 205;
-vt<int> adj[MAXN];
-int invi[MAXN];
-
-// O(N^2 * K)
+ll N;
 
 int main() {
     ios::sync_with_stdio(0);
@@ -95,31 +90,33 @@ int main() {
     auto start_time = chrono::high_resolution_clock::now();
     #endif
 
-    rep(i,0,MAXN) invi[i] = inv(i);
-
-    cin >> N >> M >> K;
-    rep(i,0,M) {
-        int u, v;
-        cin >> u >> v;
-        adj[u].pb(v);
-        adj[v].pb(u);
+    cin >> N;
+    vt<ll> fac;
+    for (ll i = 1; i*i <= N; i++) {
+        if (N%i == 0) {
+            fac.pb(i);
+            if (i*i != N) fac.pb(N/i);
+        }
     }
-    vt<vt<int>> dp(N+1, vt<int>(2, 0));
-    dp[1][0] = 1;
-    int ans = 0;
-    rep(t,0,K) {
-        rep(i,0,N) {
-            each(j,adj[i]) {
-                dp[j][1] = ad(dp[j][1], mul(dp[i][0], invi[sz(adj[i])]));
+    sort(all(fac));
+    vt<ll> dp(sz(fac));
+    dp[0] = 1;
+    rep(i,1,sz(fac)) {
+        rep(j,0,i) {
+            if (fac[i]%fac[j] == 0) {
+                dp[i] = ad(dp[i], dp[j]);
             }
         }
-        ans = ad(ans, dp[N][1]);
-        dp[N][1] = 0;
-        rep(i,0,N) {
-            dp[i][0] = dp[i][1];
-            dp[i][1] = 0;
-        }
+        dp[i] = sub(inv(fac[i]%MOD2), dp[i]);
     }
+    int ans = 0;
+    int two = inv(2);
+    rep(i,0,sz(fac)) {
+        ll f = fac[i];
+        ll x = N/f;
+        ans = ad(ans, mul(f%MOD2, mul(dp[i], mul(mul(x%MOD2, (x+1)%MOD2), two))));
+    }
+    ans = mul(ans, N%MOD2);
     cout << ans << endl;
 
     #ifdef MAGIKARP
