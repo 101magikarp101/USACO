@@ -47,7 +47,7 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-const int TRIALS = 50;
+const int TRIALS = 40;
 const int N = 28;
 const double p = 0.530603575430005;
 
