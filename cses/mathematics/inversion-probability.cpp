@@ -62,7 +62,7 @@ int main() {
             ans += res;
         }
     }
-    // cout << fixed << setprecision(100) << ans << endl;
+    cout << fixed << setprecision(100) << ans << endl;
     ans = Rint(ans);
     cout << fixed << setprecision(6) << ans << endl;
     return 0;
