@@ -1,17 +1,27 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
+using ll = long long;
 #define MOD 998244353
 #define MOD2 1000000007
 #define vt vector
+template <class T> using vvt = vt<vt<T>>;
+template <class T> using vvvt = vt<vvt<T>>;
+template <class T> using vvvvt = vt<vvvt<T>>;
 #define endl '\n'
 #define pb push_back
 #define pf push_front
 #define all(x) x.begin(),x.end()
-#define sz(x) (int)x.size()
+#define sz(x) (int)((x).size())
 #define uset unordered_set
 #define umap unordered_map
 #define mset multiset
+#define fi first
+#define se second
+#define rep(i,a,b) for(int i=a;i<b;i++)
+#define repl(i,a,b) for(ll i=a;i<b;i++)
+#define rrep(i,a,b) for(int i=a;i>=b;i--)
+#define rrepl(i,a,b) for(ll i=a;i>=b;i--)
+#define each(i,a) for(auto &i:a)
 struct pii {
     int x, y;
     bool operator<(const pii &a) const { return x == a.x ? y < a.y : x < a.x; }
@@ -35,65 +45,89 @@ struct pll {
     pll operator/(const ll &a) const { return {x/a, y/a}; }
 };
 
-template <class T> class SumSegTree {
+template<class T> bool ckmin(T& a, const T& b) {
+    return b < a ? a = b, 1 : 0; }
+template<class T> bool ckmax(T& a, const T& b) {
+    return a < b ? a = b, 1 : 0; }
+
+template <class T> class LzSegTree {
   private:
     const T DEFAULT = 0;
-    vector<T> tr, lza, lzs;
+    vector<T> tr;
+    vector<T> lza, lzs;
     int len;
+    pll merge(ll a, ll s, ll a2, ll s2) {
+        if (s != DEFAULT) return {DEFAULT, s};
+        else if (s2 == DEFAULT) return {a2+a, DEFAULT};
+        else return {DEFAULT, s2+a};
+    }
+    void push(int n, int s, int m, int e) {
+        if (lza[n] == DEFAULT && lzs[n] == DEFAULT) return;
+        auto [x, y] = merge(lza[n], lzs[n], lza[2*n], lzs[2*n]);
+        lza[2*n] = x;
+        lzs[2*n] = y;
+        auto [x2, y2] = merge(lza[n], lzs[n], lza[2*n+1], lzs[2*n+1]);
+        lza[2*n+1] = x2;
+        lzs[2*n+1] = y2;
+        if (lzs[n] != DEFAULT) {
+            tr[n*2] = (ll)(m-s+1)*lzs[n];
+            tr[n*2+1] = (ll)(e-m)*lzs[n];
+        } else if (lza[n] != DEFAULT) {
+            tr[n*2] += (ll)(m-s+1)*lza[n];
+            tr[n*2+1] += (ll)(e-m)*lza[n];
+        }
+        lza[n] = DEFAULT;
+        lzs[n] = DEFAULT;
+    }
+    void _range_add(int n, int s, int e, int l, int r, T ad, T se) {
+        if (s > r || e < l) return;
+        if (l <= s && e <= r) {
+            if (ad != DEFAULT) {
+                tr[n] += (ll)(e-s+1)*ad;
+            } else if (se != DEFAULT) {
+                tr[n] = (ll)(e-s+1)*se;
+            }
+            auto [x, y] = merge(ad, se, lza[n], lzs[n]);
+            lza[n] = x;
+            lzs[n] = y;
+            return;
+        }
+        int m = (s + e) / 2;
+        push(n, s, m, e);
+        _range_add(n*2, s, m, l, r, ad, se);
+        _range_add(n*2+1, m+1, e, l, r, ad, se);
+        tr[n] = tr[n*2] + tr[n*2+1];
+    }
+    T _query(int n, int s, int e, int l, int r) {
+        if (s > r || e < l) return DEFAULT;
+        if (l <= s && e <= r) return tr[n];
+        int m = (s + e) / 2;
+        push(n, s, m, e);
+        T left = _query(n*2, s, m, l, r);
+        T right = _query(n*2+1, m+1, e, l, r);
+        return left + right;
+    }
   public:
-    SumSegTree(int l) : len(l), tr(l*4, DEFAULT), lza(l*4, DEFAULT), lzs(l*4, DEFAULT) {}
-    void pusha(int n, int s, int m, int e) {
-        lzs[2*n] = 0, lzs[2*n+1] = 0;
-        lza[2*n] += lza[n], lza[2*n+1] += lza[n];
-        tr[2*n] += (ll)(m-s+1)*lza[n], tr[2*n+1] += (ll)(e-m)*lza[n];
-        lza[n] = 0;
-    }
-    void pushs(int n, int s, int m, int e) {
-        lza[2*n] = 0, lza[2*n+1] = 0;
-        lzs[2*n] = lzs[n], lzs[2*n+1] = lzs[n];
-        tr[2*n] = (ll)(m-s+1)*lzs[n], tr[2*n+1] = (ll)(e-m)*lzs[n];
-        lzs[n] = 0;
-    }
-    void range_add(int n, int s, int e, int l, int r, T val) {
-        if (s>r || e<l) return;
-        if (l<=s && e<=r) {
-            tr[n] += (ll)(e-s+1)*val;
-            lza[n] += val;
-            lzs[n] = 0;
-            return;
+    LzSegTree(vt<T> &a) {
+        len = 1;
+        while (len < sz(a)) len *= 2;
+        tr.assign(len*2, DEFAULT);
+        lza.assign(len*2, DEFAULT);
+        lzs.assign(len*2, DEFAULT);
+        rep(i,0,sz(a)) tr[i+len] = a[i];
+        rrep(i,len-1,1) {
+            tr[i] = tr[i*2] + tr[i*2+1];
         }
-        int m = (s+e) / 2;
-        if (lza[n] != DEFAULT) pusha(n,s,m,e);
-        if (lzs[n] != DEFAULT) pushs(n,s,m,e);
-        range_add(n*2, s, m, l, r, val);
-        range_add(n*2+1, m+1, e, l, r, val);
-        tr[n] = tr[n*2]+tr[n*2+1];
     }
-    void range_set(int n, int s, int e, int l, int r, T val) {
-        if (s>r || e<l) return;
-        if (l<=s && e<=r) {
-            tr[n] = (ll)(e-s+1)*val;
-            lzs[n] = val;
-            lza[n] = 0;
-            return;
-        }
-        int m = (s+e) / 2;
-        if (lza[n] != DEFAULT) pusha(n,s,m,e);
-        if (lzs[n] != DEFAULT) pushs(n,s,m,e);
-        range_set(n*2, s, m, l, r, val);
-        range_set(n*2+1, m+1, e, l, r, val);
-        tr[n] = tr[n*2]+tr[n*2+1];
+    void add(int idx, T val) {
+        _add(1, 0, len-1, idx, val);
     }
-    T query(int n, int s, int e, int l, int r) {
-        if (s>r || e<l) return DEFAULT;
-        if (l<=s && e<=r) return tr[n];
-        int m = (s+e) / 2;
-        if (lza[n] != DEFAULT) pusha(n,s,m,e);
-        if (lzs[n] != DEFAULT) pushs(n,s,m,e);
-        ll left = query(n*2, s, m, l, r);
-        ll right = query(n*2+1, m+1, e, l, r);
-        // cout << n << " " << s << " " << e << " " << l << " " << r << " " << left << " " << right << endl;
-        return left+right;
+    void range_add(int l, int r, T x, T y) {
+        _range_add(1, 0, len-1, l, r, x, y);
+    }
+    // query range [l, r]
+    T query(int l, int r) {
+        return _query(1, 0, len-1, l, r);
     }
 };
 
@@ -102,24 +136,31 @@ int N, Q;
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
+    #ifdef MAGIKARP
+    auto start_time = chrono::high_resolution_clock::now();
+    #endif
+
     cin >> N >> Q;
-    SumSegTree<ll> st(N);
-    for (int i = 1; i <= N; i++) {
-        ll x; cin >> x;
-        st.range_add(1,1,N,i,i,x);
-    }
+    vt<ll> a(N);
+    rep(i,0,N) cin >> a[i];
+    LzSegTree<ll> seg(a);
     while (Q--) {
-        int x; cin >> x;
-        if (x==1) {
-            int l, r; ll v; cin >> l >> r >> v;
-            st.range_add(1,1,N,l,r,v);
-        } else if (x==2) {
-            int l, r; ll v; cin >> l >> r >> v;
-            st.range_set(1,1,N,l,r,v);
+        int t; cin >> t;
+        if (t == 1) {
+            int l, r; ll x; cin >> l >> r >> x;
+            seg.range_add(l-1, r-1, x, 0);
+        } else if (t == 2) {
+            int l, r; ll y; cin >> l >> r >> y;
+            seg.range_add(l-1, r-1, 0, y);
         } else {
             int l, r; cin >> l >> r;
-            cout << st.query(1,1,N,l,r) << endl;
+            cout << seg.query(l-1, r-1) << endl;
         }
     }
+
+    #ifdef MAGIKARP
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now() - start_time).count();
+    cerr << "Time: " << duration/1000000.0 << "ms" << endl;
+    #endif
     return 0;
 }

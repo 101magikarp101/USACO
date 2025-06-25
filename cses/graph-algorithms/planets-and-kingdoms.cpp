@@ -81,7 +81,6 @@ void SCC(int N, vt<vt<int>> &adj, vt<int> &idx, int &scc) {
             dfs1(i, vis, adj, out);
         }
     }
-
     // reverse graph + dfs
     vt<vt<int>> adjrev(N);
     rep(i,0,N) {
@@ -90,14 +89,14 @@ void SCC(int N, vt<vt<int>> &adj, vt<int> &idx, int &scc) {
         }
     }
     vis.assign(N,0);
-    sccidx = 1;
+    sccidx = 0;
     rrep(i,sz(out)-1,0) {
         if (!vis[out[i]]) {
             dfs2(out[i], vis, adjrev, idx);
             sccidx++;
         }
     }
-    scc = sccidx-1;
+    scc = sccidx;
 }
 
 int N, M;
