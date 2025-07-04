@@ -1,0 +1,45 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <set>
+#include <queue>
+#include <map>
+#include <cmath>
+#include <iomanip>
+#include <cstring>
+#include <bitset>
+#include <string>
+#include <unordered_map>
+
+using namespace std;
+
+#define ll long long
+#define pll pair<ll, ll>
+#define pii pair<int, int>
+#define LLONG_MAX 9223372036854775807
+#define MOD 998244353
+#define MOD2 1000000007
+#define INT_MAX 2147483647
+
+int N, X;
+int a[102];
+int dp[1000005][105];
+
+int main() {
+    cin >> N >> X;
+    for (int i = 1; i <= N; i++) {
+        cin >> a[i];
+    }
+    dp[0][0] = 1;
+    for (int i = 1; i <= N; i++) {
+        for (int j = 0; j <= X; j++) {
+            dp[j][i] = dp[j][i-1];
+            int left = j-a[i];
+            if (left >= 0) {
+                dp[j][i] += dp[left][i];
+                dp[j][i] %= MOD2;
+            }
+        }
+    }
+    cout << dp[X][N] << endl;
+}

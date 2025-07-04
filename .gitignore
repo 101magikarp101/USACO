@@ -1,0 +1,6 @@
+/project-euler
+*.bin
+.cph/
+*.txt
+*.o
+**/.vscode/

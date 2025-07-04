@@ -1,0 +1,2 @@
+
+        ll res = K-tot;
