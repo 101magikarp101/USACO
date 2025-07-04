@@ -1,4 +1,4 @@
 /project-euler
 *.bin
 .cph/
-*.txt
+*.txt*.o
