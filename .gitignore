@@ -2,4 +2,4 @@
 *.bin
 .cph/
 *.txt
-*.o*.o
+*.o
