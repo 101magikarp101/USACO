@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "functional": "cpp",
-        "map": "cpp",
-        "numeric": "cpp",
-        "unordered_map": "cpp",
-        "*.tcc": "cpp"
-    }
-}
