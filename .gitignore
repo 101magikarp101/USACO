@@ -3,3 +3,4 @@
 .cph/
 *.txt
 *.o
+.vscode/
