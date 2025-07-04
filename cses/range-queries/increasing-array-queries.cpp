@@ -50,65 +50,12 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-struct state {
-    ll x, y;
-    state operator+(const state &a) const {
-        if (x==0 && y==0) return a;
-        else if (a.x==0 && a.y==0) return {x,y};
-        else {
-            
-        }
-    }
-};
-
-template <class T = state> class RecSegTree {
-  private:
-    const T DEFAULT = {0,0};
-    vector<T> tr;
-    int len;
-    void _add(int n, int s, int e, int idx) {
-        if (s > idx || e < idx) return;
-        if (s == e) {
-            tr[n].x++;
-            return;
-        }
-        int m = (s + e) / 2;
-        if (idx <= m) {
-            _add(n*2, s, m, idx);
-        } else {
-            _add(n*2+1, m+1, e, idx);
-        }
-        tr[n] = tr[n*2] + tr[n*2+1];
-    }
-    T _query(int n, int s, int e, int l, int r) {
-        if (s > r || e < l) return DEFAULT;
-        if (l <= s && e <= r) return tr[n];
-        int m = (s + e) / 2;
-        T left = _query(n*2, s, m, l, r);
-        T right = _query(n*2+1, m+1, e, l, r);
-        return left + right;
-    }
-  public:
-    RecSegTree(vt<T> &a) {
-        len = 1;
-        while (len < sz(a)) len *= 2;
-        tr.assign(len*2, DEFAULT);
-        rep(i,0,sz(a)) tr[i+len] = a[i];
-            rrep(i,len-1,1) {
-            tr[i] = tr[i*2] + tr[i*2+1];
-        }
-    }
-    void add(int idx, T val) {
-        _add(1, 0, len-1, idx, val);
-    }
-    // query range [l, r]
-    T query(int l, int r) {
-        return _query(1, 0, len-1, l, r);
-    }
-};
-
-int T, N;
+int N, Q;
 int a[200005];
+int r[200005];
+const int M = 18;
+int up[200005][M];
+ll p[200005], upw[200005][M];
 
 int main() {
     ios::sync_with_stdio(0);
@@ -117,7 +64,40 @@ int main() {
     auto start_time = chrono::high_resolution_clock::now();
     #endif
 
-    
+    cin >> N >> Q;
+    rep(i,0,N) cin >> a[i];
+    p[0] = a[0];
+    rep(i,1,N) p[i] = p[i-1] + a[i];
+    stack<int> st;
+    rrep(i,N-1,0) {
+        while (!st.empty() && a[st.top()] <= a[i]) st.pop();
+        r[i] = st.empty() ? N : st.top();
+        up[i][0] = r[i];
+        upw[i][0] = (ll)a[i] * (r[i] - i) - (p[r[i]-1] - (i ? p[i-1] : 0));
+        st.push(i);
+    }
+    up[N][0] = N;
+    upw[N][0] = 0;
+    rep(j,1,M) {
+        rep(i,0,N+1) {
+            up[i][j] = up[up[i][j-1]][j-1];
+            upw[i][j] = upw[i][j-1] + upw[up[i][j-1]][j-1];
+        }
+    }
+    while (Q--) {
+        int l, r; cin >> l >> r;
+        l--; r--;
+        ll ans = 0;
+        int x = l;
+        rrep(i,M-1,0) {
+            if (up[x][i] <= r) {
+                ans += upw[x][i];
+                x = up[x][i];
+            }
+        }
+        ans += (ll)a[x] * (r - x + 1) - (p[r] - (x ? p[x-1] : 0));
+        cout << ans << endl;
+    }
 
     #ifdef MAGIKARP
     auto duration = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now() - start_time).count();

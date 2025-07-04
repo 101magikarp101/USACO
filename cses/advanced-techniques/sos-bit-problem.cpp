@@ -100,6 +100,19 @@ void solve() {
     }
 }
 
+int get(int n) {
+    int ans = 0;
+    rep(i,0,M) {
+        if ((n>>i)&1) {
+            int mask = (((1<<M)-1)&~n)|((1<<(i+1))-1);
+            ans += dp1[mask];
+            mask ^= (1<<i);
+            ans -= dp1[mask];
+        }
+    }
+    return ans;
+}
+
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
@@ -115,7 +128,7 @@ int main() {
     }
     solve();
     rep(i,0,N) {
-        cout << dp1[a[i]] << " " << dp2[a[i]] << endl;
+        cout << dp1[a[i]] << " " << dp2[a[i]] << " " << get(a[i]) << endl;
     }
 
     #ifdef MAGIKARP

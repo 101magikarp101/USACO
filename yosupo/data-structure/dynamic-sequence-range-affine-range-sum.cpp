@@ -110,7 +110,7 @@ int di(int a, int b) {
 }
 
 struct Node {
-    Node *l = 0, *r = 0;
+    Node *lc = 0, *rc = 0;
     int val, sum;
     int y, c = 1;
     bool lz = 0;
@@ -123,7 +123,7 @@ struct Node {
 
 inline int cnt(Node* n) { return n ? n->c : 0; }
 inline int sa(Node* n) { return n ? n->sum : 0; }
-void Node::recalc() { c = cnt(l) + cnt(r) + 1; sum = ad(sa(l), ad(val, sa(r))); }
+void Node::recalc() { c = cnt(lc) + cnt(rc) + 1; sum = ad(sa(lc), ad(val, sa(rc))); }
 void Node::merge(int a, int b) {
     lza = mul(lza, a);
     lzb = ad(mul(lzb, a), b);
@@ -132,14 +132,14 @@ void Node::merge(int a, int b) {
 }
 void Node::push() {
     if (lz) {
-        if (l) l->lz ^= 1;
-        if (r) r->lz ^= 1;
-        swap(l, r);
+        if (lc) lc->lz ^= 1;
+        if (rc) rc->lz ^= 1;
+        swap(lc, rc);
         lz = 0;
     }
     if (lza!=1 || lzb!=0) {
-        if (l) l->merge(lza, lzb);
-        if (r) r->merge(lza, lzb);
+        if (lc) lc->merge(lza, lzb);
+        if (rc) rc->merge(lza, lzb);
         lza = 1;
         lzb = 0;
     }
@@ -149,14 +149,14 @@ void Node::push() {
 pair<Node*, Node*> split(Node* n, int k) {
     if (!n) return {};
     n->push();
-    if (cnt(n->l) >= k) { // "n->val >= k" for lower_bound(k)
-        auto [L,R] = split(n->l, k);
-        n->l = R;
+    if (cnt(n->lc) >= k) { // "n->val >= k" for lower_bound(k)
+        auto [L,R] = split(n->lc, k);
+        n->lc = R;
         n->recalc();
         return {L, n};
     } else {
-        auto [L,R] = split(n->r,k - cnt(n->l) - 1); // and just "k"
-        n->r = L;
+        auto [L,R] = split(n->rc,k - cnt(n->lc) - 1); // and just "k"
+        n->rc = L;
         n->recalc();
         return {n, R};
     }
@@ -168,10 +168,10 @@ Node* merge(Node* l, Node* r) {
     l->push();
     r->push();
     if (l->y > r->y) {
-        l->r = merge(l->r, r);
+        l->rc = merge(l->rc, r);
         return l->recalc(), l;
     } else {
-        r->l = merge(l, r->l);
+        r->lc = merge(l, r->lc);
         return r->recalc(), r;
     }
 }

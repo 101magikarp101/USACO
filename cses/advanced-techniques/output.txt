@@ -1,5 +1,20 @@
-3 2
-4 1
-2 4
-1 1
-2 4
+Visiting: 2 from 1 depth: 1
+Visiting: 3 from 2 depth: 2
+Visiting: 4 from 2 depth: 2
+Visiting: 5 from 4 depth: 3
+Visiting: 6 from 5 depth: 4
+Visiting: 4 from 6 depth: 2
+Visiting: 6 from 4 depth: 4
+Visiting: 7 from 1 depth: 1
+Visiting: 8 from 7 depth: 2
+Visiting: 10 from 8 depth: 3
+Visiting: 9 from 10 depth: 4
+Visiting: 7 from 9 depth: 1
+Visiting: 11 from 9 depth: 5
+Visiting: 10 from 11 depth: 3
+Visiting: 11 from 10 depth: 5
+Visiting: 12 from 10 depth: 4
+Visiting: 13 from 12 depth: 5
+Visiting: 9 from 7 depth: 4
+5
+4 2 12 7 1 

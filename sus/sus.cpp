@@ -4,13 +4,22 @@ using ll = long long;
 #define MOD 998244353
 #define MOD2 1000000007
 #define vt vector
+template <class T> using vvt = vt<vt<T>>;
+template <class T> using vvvt = vt<vvt<T>>;
+template <class T> using vvvvt = vt<vvvt<T>>;
+typedef vt<int> vi;
+typedef vvt<int> vvi;
+typedef vvvt<int> vvvi;
+typedef vvvvt<int> vvvvi;
+typedef vt<ll> vl;
+typedef vvt<ll> vvl;
+typedef vvvt<ll> vvvl;
+typedef vvvvt<ll> vvvvl;
 #define endl '\n'
 #define pb push_back
 #define pf push_front
 #define all(x) x.begin(),x.end()
 #define sz(x) (int)((x).size())
-#define uset unordered_set
-#define umap unordered_map
 #define mset multiset
 #define fi first
 #define se second
@@ -29,6 +38,12 @@ struct pii {
     pii operator-(const pii &a) const { return {x-a.x, y-a.y}; }
     pii operator*(const int &a) const { return {x*a, y*a}; }
     pii operator/(const int &a) const { return {x/a, y/a}; }
+    void operator+=(const pii &a) { x += a.x; y += a.y; }
+    void operator-=(const pii &a) { x -= a.x; y -= a.y; }
+    void operator*=(const int &a) { x *= a; y *= a; }
+    void operator/=(const int &a) { x /= a; y /= a; }
+    friend ostream& operator<<(ostream &os, const pii &p) {return os << "(" << p.x << ", " << p.y << ")";}
+    friend istream& operator>>(istream &is, pii &p) {return is >> p.x >> p.y;}
 };
 struct pll {
     ll x, y;
@@ -40,37 +55,43 @@ struct pll {
     pll operator-(const pll &a) const { return {x-a.x, y-a.y}; }
     pll operator*(const ll &a) const { return {x*a, y*a}; }
     pll operator/(const ll &a) const { return {x/a, y/a}; }
+    void operator+=(const pll &a) { x += a.x; y += a.y; }
+    void operator-=(const pll &a) { x -= a.x; y -= a.y; }
+    void operator*=(const ll &a) { x *= a; y *= a; }
+    void operator/=(const ll &a) { x /= a; y /= a; }
+    friend ostream& operator<<(ostream &os, const pll &p) {return os << "(" << p.x << ", " << p.y << ")";}
+    friend istream& operator>>(istream &is, pll &p) {return is >> p.x >> p.y;}
 };
-
+static uint64_t splitmix64(uint64_t x) {
+    x += 0x9e3779b97f4a7c15;
+    x = (x^(x>>30))*0xbf58476d1ce4e5b9;
+    x = (x^(x>>27))*0x94d049bb133111eb;
+    return x^(x>>31);
+}
+struct custom_hash {
+    static const uint64_t FIXED_RANDOM;
+    size_t operator()(uint64_t x) const {return splitmix64(x + FIXED_RANDOM);}
+    template<typename T> size_t operator()(const T& t) const {return splitmix64(uint64_t(std::hash<T>{}(t)) + FIXED_RANDOM);}
+};
+const uint64_t custom_hash::FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
+mt19937 rng(custom_hash::FIXED_RANDOM);
+template<typename K, typename V> using umap = unordered_map<K, V, custom_hash>;
+template<typename K> using uset = unordered_set<K, custom_hash>;
+template<typename T> using umset = unordered_multiset<T, custom_hash>;
 template<class T> bool ckmin(T& a, const T& b) {
     return b < a ? a = b, 1 : 0; }
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-const int TRIALS = 40;
-const int N = 28;
-const double p = 0.530603575430005;
+int N = 26;
 
-uint8_t dp[1<<N];
-
-bool solve() {
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_real_distribution<double> dis(0.0, 1.0);
-    rep(i,1,1<<N) {
-        dp[i] = dis(gen) <= p ? 0 : 1;
-    }
-    rep(i,2,1<<N) {
-        dp[i] += dp[i>>1];
-    }
-    bool ok = false;
-    rep(i,1<<(N-1),1<<N) {
-        if (dp[i] <= 1) {
-            ok = true;
-            break;
-        }
-    }
-    return ok;
+int avg(string s) {
+    int sum = 0;
+    for (char c : s) {
+        sum += c - 'a';
+    }   
+    if (sum % sz(s) != 0) return -1;
+    return sum / sz(s);
 }
 
 int main() {
@@ -80,17 +101,22 @@ int main() {
     auto start_time = chrono::high_resolution_clock::now();
     #endif
 
-    int success = 0;
-    rep(i,0,TRIALS) {
-        if (solve()) {
-            success++;
+    rep(i,0,N) {
+        string s; cin >> s;
+        rep(i,0,sz(s)) {
+            s[i] = tolower(s[i]);
         }
+        sort(all(s));
+        cout << s << endl;
+        // int x = avg(s);
+        // if (x != -1) {
+        //     cout << s << " " << (char)(x + 'a') << endl;
+        // }
     }
-    cout << fixed << setprecision(10) << (double)success / TRIALS << endl;
 
     #ifdef MAGIKARP
-    auto duration = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start_time).count();
-    cerr << "Time: " << duration << "ms" << endl;
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now() - start_time).count();
+    cerr << "Time: " << duration/1000000.0 << "ms" << endl;
     #endif
     return 0;
 }
