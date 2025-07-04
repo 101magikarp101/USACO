@@ -1,6 +1,0 @@
-Initial value of i: 42
-Value accessed via cr: 42
-
-After modifying i directly:
-Value of i: 100
-Value accessed via cr: 100
