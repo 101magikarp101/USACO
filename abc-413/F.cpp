@@ -84,70 +84,16 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-template <class T = int> struct Dinic { // O(sqrt(V) * E) for unit capacity
-    const static bool SCALING = false; // non-scaling = V^2E, Scaling=VElog(U) with higher constant, U is max capacity
-    int N;
-    int lim = 1;
-    const T INF = numeric_limits<T>::max();
-    struct edge {
-        int to, rev;
-        T cap, flow;
-    };
-    vi level, ptr;
-    vvt<edge> adj;
-    void init(int N) {
-        this->N = N;
-        level.resize(N); ptr.resize(N); adj.resize(N);
-    }
-    void addEdge(int a, int b, T cap, bool isDirected = true) {
-        adj[a].push_back({b, sz(adj[b]), cap, 0});
-        adj[b].push_back({a, sz(adj[a]) - 1, isDirected ? 0 : cap, 0});
-    }
-    bool bfs(int s, int t) {
-        queue<int> q({s});
-        fill(all(level), -1);
-        level[s] = 0;
-        while (!q.empty() && level[t] == -1) {
-            int v = q.front();
-            q.pop();
-            for (auto e : adj[v]) {
-                if (level[e.to] == -1 && e.flow < e.cap && (!SCALING || e.cap - e.flow >= lim)) {
-                    q.push(e.to);
-                    level[e.to] = level[v] + 1;
-                }
-            }
-        }
-        return level[t] != -1;
-    }
-    T dfs(int v, int t, T flow) {
-        if (v == t || !flow)
-            return flow;
-        for (; ptr[v] < sz(adj[v]); ptr[v]++) {
-            edge &e = adj[v][ptr[v]];
-            if (level[e.to] != level[v] + 1)
-                continue;
-            if (T pushed = dfs(e.to, t, min(flow, e.cap - e.flow))) {
-                e.flow += pushed;
-                adj[e.to][e.rev].flow -= pushed;
-                return pushed;
-            }
-        }
-        return 0;
-    }
-    T calc(int s, int t) {
-        T flow = 0;
-        for (lim = SCALING ? (1 << 30) : 1; lim > 0; lim >>= 1) {
-            while (bfs(s, t)) {
-                fill(all(ptr), 0);
-                while (T pushed = dfs(s, t, INF))
-                    flow += pushed;
-            }
-        }
-        return flow;
-    }
-};
+int N, M, K;
+int dp[3005][3005];
+int deg[3005][3005];
 
-int N, M;
+int dx[] = {0,0,-1,1};
+int dy[] = {-1,1,0,0};
+
+bool in(int x, int y) {
+    return x >= 0 && x < N && y >= 0 && y < M;
+}
 
 int main() {
     ios::sync_with_stdio(0);
@@ -156,26 +102,49 @@ int main() {
     auto start_time = chrono::high_resolution_clock::now();
     #endif
 
-    cin >> N >> M;
-    Dinic<int> din;
-    din.init(N+2);
-    int s = 0, t = N+1;
-    int tot = 0;
-    rep(i,1,N+1) {
-        int x; cin >> x;
-        if (x >= 0) {
-            din.addEdge(s, i, x);
-            tot += x;
-        } else {
-            din.addEdge(i, t, -x);
+    cin >> N >> M >> K;
+    rep(i,0,N) rep(j,0,M) dp[i][j] = 1e9;
+    rep(i,0,N) rep(j,0,M) deg[i][j] = 0;
+    queue<pii> q;
+    rep(i,0,K) {
+        int x, y; cin >> x >> y;
+        x--; y--;
+        dp[x][y] = 0;
+        rep(j,0,4) {
+            int nx = x + dx[j], ny = y + dy[j];
+            if (in(nx, ny)) {
+                deg[nx][ny]++;
+                if (deg[nx][ny] == 2) q.push({nx, ny});
+            }
         }
     }
-    rep(i,0,M) {
-        int u, v; cin >> u >> v;
-        din.addEdge(v, u, INT_MAX);
+    while (!q.empty()) {
+        pii p = q.front(); q.pop();
+        int x = p.x, y = p.y;
+        if (dp[x][y] != 1e9) continue;
+        int mi = 1e9;
+        vi v;
+        rep(d,0,4) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (in(nx, ny)) {
+                v.pb(dp[nx][ny]+1);
+            }
+        }
+        sort(all(v));
+        dp[x][y] = v[1];
+        rep(i,0,4) {
+            int nx = x + dx[i], ny = y + dy[i];
+            if (in(nx, ny)) {
+                deg[nx][ny]++;
+                if (deg[nx][ny] == 2) q.push({nx, ny});
+            }
+        }
     }
-    int ans = din.calc(s, t);
-    cout << tot - ans << endl;
+    ll ans = 0;
+    rep(i,0,N) rep(j,0,M) {
+        if (dp[i][j] != 1e9) ans += dp[i][j];
+    }
+    cout << ans << endl;
 
     #ifdef MAGIKARP
     auto duration = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now() - start_time).count();

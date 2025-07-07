@@ -84,70 +84,17 @@ template<class T> bool ckmin(T& a, const T& b) {
 template<class T> bool ckmax(T& a, const T& b) {
     return a < b ? a = b, 1 : 0; }
 
-template <class T = int> struct Dinic { // O(sqrt(V) * E) for unit capacity
-    const static bool SCALING = false; // non-scaling = V^2E, Scaling=VElog(U) with higher constant, U is max capacity
-    int N;
-    int lim = 1;
-    const T INF = numeric_limits<T>::max();
-    struct edge {
-        int to, rev;
-        T cap, flow;
-    };
-    vi level, ptr;
-    vvt<edge> adj;
-    void init(int N) {
-        this->N = N;
-        level.resize(N); ptr.resize(N); adj.resize(N);
-    }
-    void addEdge(int a, int b, T cap, bool isDirected = true) {
-        adj[a].push_back({b, sz(adj[b]), cap, 0});
-        adj[b].push_back({a, sz(adj[a]) - 1, isDirected ? 0 : cap, 0});
-    }
-    bool bfs(int s, int t) {
-        queue<int> q({s});
-        fill(all(level), -1);
-        level[s] = 0;
-        while (!q.empty() && level[t] == -1) {
-            int v = q.front();
-            q.pop();
-            for (auto e : adj[v]) {
-                if (level[e.to] == -1 && e.flow < e.cap && (!SCALING || e.cap - e.flow >= lim)) {
-                    q.push(e.to);
-                    level[e.to] = level[v] + 1;
-                }
-            }
-        }
-        return level[t] != -1;
-    }
-    T dfs(int v, int t, T flow) {
-        if (v == t || !flow)
-            return flow;
-        for (; ptr[v] < sz(adj[v]); ptr[v]++) {
-            edge &e = adj[v][ptr[v]];
-            if (level[e.to] != level[v] + 1)
-                continue;
-            if (T pushed = dfs(e.to, t, min(flow, e.cap - e.flow))) {
-                e.flow += pushed;
-                adj[e.to][e.rev].flow -= pushed;
-                return pushed;
-            }
-        }
-        return 0;
-    }
-    T calc(int s, int t) {
-        T flow = 0;
-        for (lim = SCALING ? (1 << 30) : 1; lim > 0; lim >>= 1) {
-            while (bfs(s, t)) {
-                fill(all(ptr), 0);
-                while (T pushed = dfs(s, t, INF))
-                    flow += pushed;
-            }
-        }
-        return flow;
-    }
-};
+int T, N;
+ll a[600005], b[600005];
+ll ls[600006];
 
-int N, M;
+ll gcd(ll a, ll b) {
+    return b ? gcd(b, a % b) : a;
+}
+
+ll lcm(ll a, ll b) {
+    return a / gcd(a, b) * b;
+}
 
 int main() {
     ios::sync_with_stdio(0);
@@ -156,26 +103,35 @@ int main() {
     auto start_time = chrono::high_resolution_clock::now();
     #endif
 
-    cin >> N >> M;
-    Dinic<int> din;
-    din.init(N+2);
-    int s = 0, t = N+1;
-    int tot = 0;
-    rep(i,1,N+1) {
-        int x; cin >> x;
-        if (x >= 0) {
-            din.addEdge(s, i, x);
-            tot += x;
-        } else {
-            din.addEdge(i, t, -x);
+    cin >> T;
+    while (T--) {
+        cin >> N;
+        rep(i,0,N) cin >> a[i];
+        rep(i,0,N) {
+            b[i] = -1;
+            ls[i] = 1;
         }
+        rep(i,1,N) {
+            if (a[i]%a[i-1] != 0) {
+                b[i] = a[i];
+            }
+        }
+        rep(i,1,N) {
+            ls[i] = ls[i-1];
+            if (b[i] != -1) {
+                ls[i] = b[i];
+            }
+        }
+        ll ans = 1;
+        rep(i,0,N-1) {
+            if (a[i+1]%a[i] == 0) continue;
+            ll lc = lcm(a[i], a[i+1]);
+            ll x = lc/a[i+1];
+            a[i+1] = lc;
+            ans = lcm(ans, x);
+        }
+        cout << ans << endl;
     }
-    rep(i,0,M) {
-        int u, v; cin >> u >> v;
-        din.addEdge(v, u, INT_MAX);
-    }
-    int ans = din.calc(s, t);
-    cout << tot - ans << endl;
 
     #ifdef MAGIKARP
     auto duration = chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now() - start_time).count();
